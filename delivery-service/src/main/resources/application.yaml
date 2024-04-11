@@ -1,0 +1,53 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /delivery-service
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud: error
+
+spring:
+  application:
+    name: delivery-service
+
+  main:
+    banner-mode: off
+
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.globally_quoted_identifiers: true
+
+  config:
+    import: "optional:kubernetes:"
+  cloud:
+    kubernetes:
+      reload:
+        enabled: true
+        strategy: refresh
+      config:
+        fail-fast: true
+      secrets:
+        fail-fast: true
+    function:
+      definition: deliveryCreate
+    stream:
+      bindings:
+        orderSagaReplies-out-0:
+          destination: orderSagaReplies
+
+        deliveryCreate-in-0:
+          destination: deliveryTopic
+          group: delivery
+      kafka:
+        binder:
+          headers:
+            - type

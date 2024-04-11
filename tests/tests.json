@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "edc2c0f9-3fdb-4ac6-a3b3-857b9d2114fa",
+		"name": "otus_l7",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Создать заказ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создание заказа 1\", function () {",
+							"    pm.expect(pm.response.code).to.eq(201);",
+							"    pm.collectionVariables.set(\"idOrderOne\", pm.response.text());",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"count\": 1,\n    \"productId\": 1,\n    \"price\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/order-service/orders/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"order-service",
+						"orders",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить заказ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверка получения заказа\", function () {",
+							"    pm.expect(pm.response.code).to.eq(200);",
+							"",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"COMPLETE\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(() => {}, 2000); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/order-service/orders/{{idOrderOne}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"order-service",
+						"orders",
+						"{{idOrderOne}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создать заказ с большим кол-вом товара",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создание заказа 2\", function () {",
+							"    pm.expect(pm.response.code).to.eq(201);",
+							"    pm.collectionVariables.set(\"idOrderTwo\", pm.response.text());",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"count\": 10000,\n    \"productId\": 1,\n    \"price\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/order-service/orders/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"order-service",
+						"orders",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить заказ с ошибкой",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверка получения заказа\", function () {",
+							"    pm.expect(pm.response.code).to.eq(200);",
+							"",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"FAILED\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(() => {}, 2000); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/order-service/orders/{{idOrderTwo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"order-service",
+						"orders",
+						"{{idOrderTwo}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://arch.homework",
+			"type": "default"
+		},
+		{
+			"key": "idOrderOne",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "idOrderTwo",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

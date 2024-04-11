@@ -1,0 +1,39 @@
+@startuml
+
+autonumber
+
+actor Actor
+
+Actor -> "order service": Создание заказа
+
+queue stock
+"order service" -> "stock": Отправка события резервирования товара
+stock -> "stock service": Обработка события резервирования товара в сервисе "Склад"
+
+queue "order saga replies"
+"stock service" -> "order saga replies": Отправка события в очередь оркестратора
+"order saga replies" -> "order service": Обработка оркестратором результата работы сервиса "Склад"
+
+queue payment
+"order service" -> payment: Отправка события оплаты товара
+payment -> "payment service": Обработка события оплаты товара в сервисе "Оплата"
+"payment service" -> "order saga replies": Отправка события в очередь оркестратора
+"order saga replies" -> "order service": Обработка оркестратором результата оплаты товара
+
+queue delivery
+"order service" -> delivery: Отправка событие доставки товара
+delivery -> "delivery service": Обработка события доставки товара в сервисе "Доставка"
+"delivery service" -> "order saga replies": Отправка события в очередь оркестратора
+"order saga replies" -> "order service": Обработка оркестратором отрицательного результата доставки товара
+
+"order service" -> "payment": Отправка событие отмены оплаты
+"payment" -> "payment service": Обработка события отмены оплаты товара в сервисе "Оплата"
+"payment service" -> "order saga replies": Отправка события в очередь оркестратора
+"order saga replies" -> "order service": Обработка оркестратором результата отмены в сервисе "Оплата"
+
+"order service" -> "stock": Отправка событие отмены резервирования товара
+"stock" -> "stock service": Обработка события отмены резервирования товара в сервисе "Склад"
+"stock service" -> "order saga replies": Отправка события в очередь оркестратора
+"order saga replies" -> "order service": Обработка оркестратором результата отмены резервирования в сервисе "Склад"
+
+@enduml

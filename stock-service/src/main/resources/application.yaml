@@ -1,0 +1,56 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /stock-service
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud: error
+
+spring:
+  application:
+    name: stock-service
+
+  main:
+    banner-mode: off
+
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.globally_quoted_identifiers: true
+
+  config:
+    import: "optional:kubernetes:"
+  cloud:
+    kubernetes:
+      reload:
+        enabled: true
+        strategy: refresh
+      config:
+        fail-fast: true
+      secrets:
+        fail-fast: true
+    function:
+      definition: stockUpdate;stockRollback
+    stream:
+      bindings:
+        orderSagaReplies-out-0:
+          destination: orderSagaReplies
+
+        stockUpdate-in-0:
+          destination: stockTopic
+          group: stock
+        stockRollback-in-0:
+          destination: stockTopic
+          group: stock
+      kafka:
+        binder:
+          headers:
+            - type

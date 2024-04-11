@@ -1,0 +1,26 @@
+@startuml
+
+state order_create
+state order_complete
+state order_failed
+state stock_update
+state stock_rollback
+state payment_create
+state payment_cancel
+state delivery_create
+
+order_create --> stock_update
+stock_update --> payment_create
+payment_create --> delivery_create
+delivery_create --> order_complete
+delivery_create --> payment_cancel
+payment_cancel --> stock_rollback
+stock_rollback --> order_failed
+payment_create --> stock_rollback
+stock_update --> order_failed
+order_create --> order_failed
+
+
+scale 350 width
+
+@enduml
